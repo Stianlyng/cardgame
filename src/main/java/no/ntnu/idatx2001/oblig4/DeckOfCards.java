@@ -1,5 +1,8 @@
 package no.ntnu.idatx2001.oblig4;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Represents a deck of cards. A deck of cards consists of 52 cards, 13 cards of each suit.
  * 
@@ -32,4 +35,19 @@ public class DeckOfCards {
             }
         }
     }
+
+    public Collection<PlayingCard> dealHand(int numberOfCards) {
+
+        Collection<PlayingCard> randomNumbers = new ArrayList<>();
+
+        while (randomNumbers.size() < numberOfCards) {
+            int random = (int) (Math.random() * 52);
+            if (!randomNumbers.contains(deck[random])) {
+                randomNumbers.add(deck[random]);
+            }
+        }  
+
+        return randomNumbers;
+    }
+
 }
