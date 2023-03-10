@@ -50,11 +50,4 @@ public class DeckOfCards {
         return randomNumbers;
     }
 
-    public static void main(String[] args) {
-        DeckOfCards deck = new DeckOfCards();
-        Collection<PlayingCard> hand = deck.dealHand(52);
-        for (PlayingCard playingCard : hand) {
-            System.out.println(playingCard.getAsString());
-        }    
-    }
 }
