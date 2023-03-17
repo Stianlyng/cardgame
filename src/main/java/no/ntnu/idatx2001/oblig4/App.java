@@ -24,6 +24,8 @@ import java.util.Collection;
 public class App extends Application {
 
     private int numElementsToDisplay = 5;
+    DeckOfCards deck = new DeckOfCards();
+    Collection<PlayingCard> hand;
 
     private HBox elementsHBox;
     private VBox loremVBox;
@@ -58,22 +60,65 @@ public class App extends Application {
         });
 
         // Create a button to render some Lorem text
-        Button loremButton = new Button("Render Lorem Text");
+        Button checkButton = new Button("Check hand");
 
         // Add an event handler to the button using a lambda expression
-        loremButton.setOnAction(event -> {
-            Label loremLabel = new Label("Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                    "Maecenas ac sapien in nisi lobortis fringilla. Fusce auctor turpis vel nisl ");
-            if (loremVBox == null) {
+        checkButton.setOnAction(event -> {
+
+            // get the sum of the faces using streams
+            int sum = this.hand.stream()
+                    .mapToInt(card -> card.getFace())
+                    .sum();
+            
+            // check for hearts in hand using streams
+            long hearts = this.hand.stream()
+                    .filter(card -> card.getSuit() == 'H')
+                    .count();
+    
+            // get all hearts in hand using streams
+            String heartsString = this.hand.stream()
+                .filter(card -> card.getSuit() == 'H')
+                .map(card -> card.getAsString())
+                .reduce("", (a, b) -> a + " " + b);
+
+            if (heartsString.length() > 0) {
+                heartsString = " -" + heartsString;
+            }
+
+            // check if the hand is a flush
+            boolean isFlush = this.hand.stream()
+                    .map(card -> card.getSuit())
+                    .distinct()
+                    .count() == 1;
+            
+            // check if the hand is a straight
+            boolean isStraight = this.hand.stream()
+                    .map(card -> card.getFace())
+                    .distinct()
+                    .count() == 5;
+
+            // check if the hand contains a queen of spades
+            boolean hasQueenOfSpades = this.hand.stream()
+                    .anyMatch(card -> card.getFace() == 12 && card.getSuit() == 'S');
+            
+
+            Label sumLabel = new Label("Sum of the faces:" + sum + 
+                                        "\nHearts: " + hearts + "" + heartsString +
+                                        "\nFlush: " + isFlush +
+                                        "\nStraight: " + isStraight +
+                                        "\nHas Queen of Spades: " + hasQueenOfSpades);
+            if (loremVBox != null) {
+                loremVBox.getChildren().clear();
+            } else {
                 loremVBox = new VBox();
                 loremVBox.setSpacing(10);
                 root.add(loremVBox, 0, 2);
             }
-            loremVBox.getChildren().add(loremLabel);
+            loremVBox.getChildren().add(sumLabel);
         });
 
         // Add the buttons to the HBox
-        buttonHBox.getChildren().addAll(renderButton, loremButton);
+        buttonHBox.getChildren().addAll(renderButton, checkButton);
 
         // Add the HBox and VBox to the GridPane
         root.add(elementsHBox, 0, 0);
@@ -97,8 +142,7 @@ public class App extends Application {
         // Clear the HBox
         elementsHBox.getChildren().clear();
 
-        DeckOfCards deck = new DeckOfCards();
-        Collection<PlayingCard> hand = deck.dealHand(numElements);
+        this.hand = this.deck.dealHand(numElements);
         for (PlayingCard card : hand) {
             Label elementLabel = new Label(card.getAsString());
             elementsHBox.getChildren().add(elementLabel);
