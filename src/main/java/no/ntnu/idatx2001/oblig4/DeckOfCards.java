@@ -48,6 +48,5 @@ public class DeckOfCards {
         }  
 
         return randomNumbers;
-    }
-
+    } 
 }
